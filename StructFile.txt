@@ -1,3 +1,0 @@
-Person 1
-Name: Vache Surname: Petrosyan
-
