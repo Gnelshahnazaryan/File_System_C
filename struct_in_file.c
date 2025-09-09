@@ -5,9 +5,9 @@
 
 typedef struct Person{
 
-	int age;
 	char name[50];
 	char surname[50];
+	int age;
 
 
 }Person;
@@ -128,47 +128,46 @@ void FindByName(char str[],Person* obj){
 
 		}
 
-	
-
 	}
 		printf("Error reading the file or reached EOF.\n");
 
 		fclose(file);
 }
 
-int personCount(){
 
-	int count = 0;
+int personCount() {
+    int count = 0;
+    FILE* file = fopen("./struct.bin", "rb");
 
-	FILE* file = fopen("./struct.bin","rb");
+    if (file == NULL) {
 
-	rewind(file);
+        return -1;
 
-	while(!(feof(file))){
+    }
 
-			fseek(file,sizeof(Person),SEEK_CUR);
-		
-			count++;
-	}
+    Person tmp;
 
-	fclose(file);
+    while (fread(&tmp, sizeof(Person), 1, file)) {
 
-	return count;
-	
+        count++;
+
+    }
+
+    fclose(file);
+
+    return count;
 }
+
 
 
 void reset(FILE* file){
 
 	file = fopen("./struct.bin", "wb");
+	fclose(file);
 
 }
 
 void ChangeInfo(Person* obj){
-
-	/*char flag[10];
-	printf("What info do you want change? ");
-	scanf("%s",flag);*/
 
 	FILE* file = fopen("./struct.bin", "ab+");
 
@@ -196,8 +195,6 @@ void ChangeInfo(Person* obj){
 
 	printf("Name: %s Surname: %s Age: %d\n", obj->name,obj->surname,obj->age);
 
-	//restore(&obj,index);
-
 	fwrite(obj,sizeof(Person),1,file);
 
 	if (fwrite(obj, sizeof(Person), 1, file) != 1) {
@@ -211,13 +208,47 @@ void ChangeInfo(Person* obj){
 
 }
 
+void RemovePerson(int index){
+
+	FILE* file = fopen("./struct.bin","rb");
+
+	FILE* file1 = fopen("./NewStruct.bin","wb");
+
+	rewind(file);
+
+	Person p;
+
+	int i = 0;
+	
+	 while (fread(&p, sizeof(Person), 1, file) == 1) {
+
+        if (i != index) {
+
+            fwrite(&p, sizeof(Person), 1, file1);
+
+        }
+
+        i++;
+
+    }
+
+    fclose(file);
+
+    fclose(file1);
+
+
+}
+
+
 
 int main(){
 
-	//FILE* file = fopen("./struct.bin","r");
+	FILE* file = fopen("./struct.bin","r");
 
-	/*Person p;
-	int num = 0;
+	//reset(file);
+	
+	Person p;
+	int flag = 0;
 	char name[50];
 
 	for(int i = 0; i < 2; i++){
@@ -226,26 +257,27 @@ int main(){
 
 	}
 
-	printf("If want find person by name write 1 else 0:");
-	scanf("%d",&num);
 
-	if(num == 1){
+	printf("If want find person by name write 1 else 0: ");
+	scanf("%d",&flag);
 
-		printf("Enter name:");
+	if(flag == 1){
+
+		printf("Enter name: ");
 		scanf("%s",name);
 		FindByName(name,&p);
 
 	}else{
 
-		printf("Thank you");
+		printf("Thank you\n");
 
 	}
 
 	//restore(&p,1);
 
-	ChangeInfo(&p);*/
-	printf("%d",personCount());
-	//printf("%d",count);
+	ChangeInfo(&p);
+	int count = personCount();
+	printf("%d",count);
 
 	return 0;	
 }
