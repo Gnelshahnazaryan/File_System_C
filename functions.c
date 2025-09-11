@@ -34,43 +34,95 @@ void Print_Persons(){
 
 }
 
-void PersonToFile(Person* obj){
+void PersonToFile(Person* obj,int count){
 
 	FILE* file = fopen("./struct.bin", "ab");
 
-	if(file == NULL){
+    if(file == NULL){
 
 		perror("Error opening file");
 		return;
 
 	}
 
-	printf("Enter name,surname and age: ");
-	if(scanf("%49s %49s %d",obj->name,obj->surname,&obj->age) != 3){
+    if(count == 0){
+
+        printf("Wrong count:");
+        return;
+
+    }
+
+
+    if(count == 1){
+        printf("Enter name,surname and age: ");
+
+	    if(scanf("%49s %49s %d",obj->name,obj->surname,&obj->age) != 3){
 
          printf("Invalid input.\n");
          fclose(file);
          return;
 
-    }
+        }
+    }else if(count > 1){
 
-	
+        for (size_t i = 0; i < count; i++)
+        {
+            
+            printf("Enter name,surname and age: ");
 
-        if (fwrite(obj, sizeof(Person), 1, file) == 1) {
+	        if(scanf("%49s %49s %d",obj->name,obj->surname,&obj->age) != 3){
 
-            printf("Person info written successfully.\n");
+                printf("Invalid input.\n");
+                fclose(file);
+                return;
 
-        } else {
+            }
 
-            printf("Write error occurred.\n");
+            if (fwrite(obj, sizeof(Person), 1, file) == 1) {
+
+                printf("Person info written successfully.\n");
+
+            } else {
+
+                printf("Write error occurred.\n");
+
+            }
 
         }
 
-	fclose(file);
+
+    }
+
+    fclose(file);
+    return;
 
 }
+	// printf("Enter name,surname and age: ");
+	// if(scanf("%49s %49s %d",obj->name,obj->surname,&obj->age) != 3){
 
-void Print_Person(Person* obj){
+    //      printf("Invalid input.\n");
+    //      fclose(file);
+    //      return;
+
+    // }
+
+	
+
+    //     if (fwrite(obj, sizeof(Person), 1, file) == 1) {
+
+    //         printf("Person info written successfully.\n");
+
+    //     } else {
+
+    //         printf("Write error occurred.\n");
+
+    //     }
+
+	
+
+
+
+/*void Print_Person(Person* obj){
 
 	 FILE* file = fopen("./struct.bin","rb");
 
@@ -95,14 +147,13 @@ void Print_Person(Person* obj){
 
 	fclose(file);
 
-}
+}*/
 
 
 
-void FindByName(const char str[],Person* obj){
+void FindByName(Person* obj,const char str[]){
 
 	FILE* file = fopen("./struct.bin","rb");
-
 
     int found = 0;
 
@@ -145,7 +196,7 @@ void ChangeInfo(Person* obj){
 	printf("Enter person index for changing info:");
 	scanf("%d", &index);
 	
-	if(fseek(file,index * sizeof(Person),SEEK_CUR)){
+	if(fseek(file,index * sizeof(Person),SEEK_CUR) != 0){
 
         printf("Seek failed.\n");
         fclose(file);
@@ -156,14 +207,21 @@ void ChangeInfo(Person* obj){
 	if(fread(obj, sizeof(Person), 1, file) == 1){
 
         printf("Enter new name,surname and age: ");
-	    scanf("%s %s %d",NewName,NewSurname,&NewAge);
+	    if(scanf("%49s %49s %d",NewName,NewSurname,&NewAge) != 3){
 
-    }else{
+         printf("Invalid input.\n");
+         fclose(file);
+         return;
 
-        printf("Read failed\n");
-        return;
+        }
+    }    
 
-    }
+    // }else{
+
+    //     printf("Read failed\n");
+    //     return;
+
+    // }
 	 
 	
 	strcpy(obj->name,NewName);
@@ -269,7 +327,7 @@ void reset(const char pathname[]){
 
 }
 
-void restore(Person* obj,int index){
+void Print_One_Person(Person* obj,int index){
 
 	FILE* file = fopen("./struct.bin","rb");
 
@@ -302,3 +360,17 @@ void restore(Person* obj,int index){
 
 }
 
+void printMenu() {
+    printf("\n======= MENU =======\n");
+    printf("1. Add a person\n");
+    printf("2. Print person by index\n");
+    printf("3. Search by name\n");
+    printf("4. Modify person by index\n");
+    printf("5. Remove person by index\n");
+    printf("6. Show total number of persons\n");
+    printf("7. Clear file (reset)\n");
+    //printf("8. Restore person by index\n");
+    printf("8. Show menu (help)\n");
+    printf("0. Exit\n");
+    printf("====================\n");
+}
