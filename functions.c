@@ -18,7 +18,7 @@ void Print_Persons(){
 
 	 while(fread(&obj, sizeof(Person), 1, file) == 1){
 
-		printf("Person %d\n Name: %s\n Surname: %s\n Age: %d\n",count, obj.name,obj.surname,obj.age);
+		printf(" Person %d\n Name: %s\n Surname: %s\n Age: %d\n",count + 1, obj.name,obj.surname,obj.age);
 		count++;
 
 	 }
@@ -118,38 +118,6 @@ void PersonToFile(Person* obj,int count){
 
     //     }
 
-	
-
-
-
-/*void Print_Person(Person* obj){
-
-	 FILE* file = fopen("./struct.bin","rb");
-
-	 if(file == NULL){
-
-		perror("Error opening file");
-		return;
-
-	 } 
-
-	 
-
-       if (fread(obj, sizeof(Person), 1, file) == 1) {
-
-            printf("Name: %s\n Surname: %s\n Age: %d\n", obj->name,obj->surname,obj->age);
-
-        } else {
-
-            printf("Error reading the file or reached EOF.\n");
-
-        }
-
-	fclose(file);
-
-}*/
-
-
 
 void FindByName(Person* obj,const char str[]){
 
@@ -214,15 +182,7 @@ void ChangeInfo(Person* obj){
          return;
 
         }
-    }    
-
-    // }else{
-
-    //     printf("Read failed\n");
-    //     return;
-
-    // }
-	 
+    }     
 	
 	strcpy(obj->name,NewName);
 	strcpy(obj->surname,NewSurname);
@@ -291,7 +251,7 @@ int personCount(const char pathname[]) {
 
     if (file == NULL) {
 
-        return -1;
+        return 0;
 
     }
 
@@ -330,6 +290,7 @@ void reset(const char pathname[]){
 void Print_One_Person(Person* obj,int index){
 
 	FILE* file = fopen("./struct.bin","rb");
+    const char path[] = "./struct.bin";
 
 	if(file == NULL){
 
@@ -337,6 +298,13 @@ void Print_One_Person(Person* obj,int index){
 		return;
 
 	}
+
+      if (index < 0 || index >= personCount(path)) {
+        printf("Index out of range.\n");
+        fclose(file);
+        return;
+    }
+
 
 	if(fseek(file,index * sizeof(Person),SEEK_SET) != 0){
 
@@ -353,12 +321,67 @@ void Print_One_Person(Person* obj,int index){
     }else{
 
     	printf("Error reading the file or reached EOF.\n");
+        clearerr(file);
 
 	}
 	 
 	fclose(file);
 
 }
+
+void bin_to_txt(const char path[]){
+
+    FILE* file = fopen(path,"rb");
+
+    FILE* txt;
+    char choice[15];
+    Person obj;
+    int count = 1;
+
+    printf("Want append persons or overwrite: ");
+    scanf("%s",choice);
+
+    if(strcmp(choice,"append") || strcmp(choice,"Append")){
+
+        txt = fopen("./Persons.txt", "a");
+
+    }else if (strcmp(choice,"overwrite") || strcmp(choice,"Overwrite")){
+
+        txt = fopen("./Persons.txt", "w");
+
+    }else{
+
+        printf("Wrong input::\n");
+        fclose(file);
+        fclose(txt);
+        return;
+
+    }
+
+
+    for (size_t i = 0; i < personCount(path); i++)
+    {
+        if(fread(&obj,sizeof(Person),1,file) == 1){
+
+            fprintf(txt,"Person %d {%s:%s:%d}\n",count,obj.name,obj.surname,obj.age);
+            count++;
+
+        }else{
+
+            printf("Failed convet to txt file\n");
+            return;
+
+        }
+
+    }
+    
+    fclose(file);
+    fclose(txt);
+
+}
+
+
+
 
 void printMenu() {
     printf("\n======= MENU =======\n");
@@ -369,8 +392,9 @@ void printMenu() {
     printf("5. Remove person by index\n");
     printf("6. Show total number of persons\n");
     printf("7. Clear file (reset)\n");
-    //printf("8. Restore person by index\n");
-    printf("8. Show menu (help)\n");
+    printf("8. Print all persons\n");
+    printf("9. Show menu (help)\n");
+    printf("10. Convert to txt file\n");
     printf("0. Exit\n");
     printf("====================\n");
 }
