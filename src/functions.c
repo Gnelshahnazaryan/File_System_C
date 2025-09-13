@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "person_struct.h" 
+#include "../include/person_struct.h" 
 
 void Print_Persons(){
 
-	 FILE* file = fopen("./struct.bin", "rb");
+	 FILE* file = fopen("../store/struct.bin", "rb");
 	 int count = 0;
 	 Person obj;
 
@@ -36,7 +36,7 @@ void Print_Persons(){
 
 void PersonToFile(Person* obj,int count){
 
-	FILE* file = fopen("./struct.bin", "ab");
+	FILE* file = fopen("../store/struct.bin", "ab");
 
     if(file == NULL){
 
@@ -97,31 +97,10 @@ void PersonToFile(Person* obj,int count){
     return;
 
 }
-	// printf("Enter name,surname and age: ");
-	// if(scanf("%49s %49s %d",obj->name,obj->surname,&obj->age) != 3){
-
-    //      printf("Invalid input.\n");
-    //      fclose(file);
-    //      return;
-
-    // }
-
-	
-
-    //     if (fwrite(obj, sizeof(Person), 1, file) == 1) {
-
-    //         printf("Person info written successfully.\n");
-
-    //     } else {
-
-    //         printf("Write error occurred.\n");
-
-    //     }
-
 
 void FindByName(Person* obj,const char str[]){
 
-	FILE* file = fopen("./struct.bin","rb");
+	FILE* file = fopen("../store/struct.bin","rb");
 
     int found = 0;
 
@@ -148,7 +127,7 @@ void FindByName(Person* obj,const char str[]){
 
 void ChangeInfo(Person* obj){
 
-	FILE* file = fopen("./struct.bin", "rb+");
+	FILE* file = fopen("../store/struct.bin", "rb+");
 
     if(file == NULL){
 
@@ -206,9 +185,9 @@ void ChangeInfo(Person* obj){
 
 void RemovePerson(int index){
 
-	 FILE* file = fopen("./struct.bin","rb");
+	 FILE* file = fopen("../store/struct.bin","rb");
 
-	 FILE* file1 = fopen("./NewStruct.bin","ab");
+	 FILE* file1 = fopen("../store/NewStruct.bin","ab");
 
      if (!file || !file1) {
         perror("Error opening files");
@@ -237,8 +216,8 @@ void RemovePerson(int index){
       fclose(file1);
 
 
-     remove("./struct.bin");
-     rename("./NewStruct.bin", "./struct.bin");
+     remove("../store/struct.bin");
+     rename("../store/NewStruct.bin", "../store/struct.bin");
 
      printf("Person at index %d removed (if existed).\n", index);
 
@@ -289,8 +268,8 @@ void reset(const char pathname[]){
 
 void Print_One_Person(Person* obj,int index){
 
-	FILE* file = fopen("./struct.bin","rb");
-    const char path[] = "./struct.bin";
+	FILE* file = fopen("../store/struct.bin","rb");
+    const char path[] = "../store/struct.bin";
 
 	if(file == NULL){
 
@@ -331,7 +310,17 @@ void Print_One_Person(Person* obj,int index){
 
 void bin_to_txt(const char path[]){
 
+    rename("../store/.Persons.txt","../store/Persons.txt");
+
     FILE* file = fopen(path,"rb");
+
+    if(file == NULL){
+
+        printf("Error opening file");
+        fclose(file);
+        return;
+
+    }
 
     FILE* txt;
     char choice[15];
@@ -341,13 +330,13 @@ void bin_to_txt(const char path[]){
     printf("Want append persons or overwrite: ");
     scanf("%s",choice);
 
-    if(strcmp(choice,"append") || strcmp(choice,"Append")){
+    if(strcmp(choice,"append") == 0 || strcmp(choice,"Append") == 0){
 
-        txt = fopen("./Persons.txt", "a");
+        txt = fopen("../store/Persons.txt", "a");
 
-    }else if (strcmp(choice,"overwrite") || strcmp(choice,"Overwrite")){
+    }else if (strcmp(choice,"overwrite") == 0 || strcmp(choice,"Overwrite") == 0){
 
-        txt = fopen("./Persons.txt", "w");
+        txt = fopen("../store/Persons.txt", "w");
 
     }else{
 
@@ -357,6 +346,15 @@ void bin_to_txt(const char path[]){
         return;
 
     }
+
+    if(txt == NULL){
+
+        printf("Error opening file:\n");
+        fclose(txt);
+        return;
+
+    }
+
 
 
     for (size_t i = 0; i < personCount(path); i++)
@@ -368,7 +366,9 @@ void bin_to_txt(const char path[]){
 
         }else{
 
-            printf("Failed convet to txt file\n");
+            printf("Failed convert to txt file\n");
+            fclose(file);
+            fclose(txt);
             return;
 
         }

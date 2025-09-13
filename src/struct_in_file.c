@@ -1,51 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "person_struct.h"
-
-void reset_txt(){
-
-	FILE* file = fopen("./Persons.txt","w");
-	 if (file != NULL) {
-
-        fclose(file);
-        printf("File reset successfully.\n");
-
-    } else {
-
-        perror("Error resetting file");
-
-    }
-
-	fclose(file);
-
-}
+#include "../include/person_struct.h"
 
 
 int main(){
 
-	reset_txt();
-
 	int choice, index, count;
     Person obj;
     char name[50];
-    char path[] = "./struct.bin";
+    char path[] = "../store/struct.bin";
 	
+	rename("../store/Persons.txt","../store/.Persons.txt");
+
 	printMenu();
 
 	printf("Enter your choice: ");
 	scanf("%d",&choice);
 
 	 while(1){
-
-		// if (choice == 9)
-		// {
-			
-		// printMenu();
-    	// printf("Enter your choice: ");
-    	// scanf("%d", &choice);
-
-		// }
 
 		switch (choice)
 		{
